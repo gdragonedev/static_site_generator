@@ -1,11 +1,29 @@
-from textnode import TextNode
-from htmlnode import HTMLNode
+import os
+
+from static_to_public import copy_static_recursive, clear_destination
 
 def main():
-    test_text = TextNode("This is a text node", "bold", "https://www.boot.dev")
-    #print(test_text)
 
-    test_HTML = HTMLNode("a", "This is a link", None, {"href": "https://www.google.com"})
-    #print(test_HTML)
+    source = "../static/"
+    destination = "../public/"
 
-main()
+    # Debugging prints
+    print(f"Source directory exists: {os.path.exists(source)}")
+    print(f"Destination directory exists: {os.path.exists(destination)}")
+    
+    if not os.path.exists(source):
+        print(f"Error: Source directory '{source}' does not exist.")
+        return
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+        print(f"Created destination directory '{destination}'.")
+    
+    try:
+        clear_destination(destination)
+        copy_static_recursive(source, destination)
+        print(f"Files copied from {source} to {destination} successfully...")
+    except Exception as e:
+        print(f"Files not copied, error: {e}")
+
+if __name__ == "__main__":
+    main()

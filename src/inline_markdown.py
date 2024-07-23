@@ -69,7 +69,7 @@ def split_nodes_image(old_nodes):
             continue
 
         img_tuples = extract_markdown_images(old_node.text)
-        if not img_tuples:
+        if img_tuples == [None]:
             new_nodes.append(old_node)
             continue
 
@@ -102,7 +102,7 @@ def split_nodes_link(old_nodes):
             continue
         
         link_tuples = extract_markdown_links(old_node.text)
-        if not link_tuples:
+        if link_tuples == [None]:
             new_nodes.append(old_node)
             continue
 

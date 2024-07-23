@@ -1,6 +1,8 @@
 import re
 
-from htmlnode import HTMLNode
+from htmlnode import ParentNode
+from inline_markdown import text_to_textnodes
+from textnode import text_node_to_html_node
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
@@ -28,7 +30,7 @@ def markdown_to_html_node(markdown):
         elif block_type == block_type_ordered_list:
             children.append(ol_block_to_html_node(block))
 
-    return HTMLNode("div", children=children)
+    return ParentNode("div", children=children)
 
 def markdown_to_blocks(markdown):
     blank_line_regex = r"(?:\r?\n){2,}"
@@ -65,39 +67,61 @@ def block_to_block_type(md_block):
     
     return block_type_paragraph
 
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    children = []
+    for text_node in text_nodes:
+        html_node = text_node_to_html_node(text_node)
+        children.append(html_node)
+    return children
+
 def p_block_to_html_node(block):
-    return HTMLNode("p", block)
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+    children = text_to_children(paragraph)
+    return ParentNode("p", children)
 
 def code_block_to_html_node(block):
-    code_content = block.strip("` \n")
-    code_node = HTMLNode("code", code_content)
-    return HTMLNode("pre", [code_node])
+    text = block.strip("` \n")
+    children = text_to_children(text)
+    code_node = ParentNode("code", children)
+    return ParentNode("pre", [code_node])
 
 def quote_block_to_html_node(block):
     quote_lines = block.split("\n")
     new_block = ""
     for line in quote_lines:
-        new_block += f"{line.lstrip(">")}\n"
-
-    return HTMLNode("blockquote", new_block)
+        new_block += f"{line.lstrip("> ")}"
+    text = new_block
+    children = text_to_children(text)
+    
+    return ParentNode("blockquote", children)
 
 def h_block_to_html_node(block):
     h_size = block.count("#", 0, block.index(" "))
+    text = block.lstrip("# ")
+    children = text_to_children(text)
 
-    return HTMLNode(f"h{h_size}", block.lstrip("# "))
+    print(f"children: {children}")
+
+    return ParentNode(f"h{h_size}", children)
 
 def ul_block_to_html_node(block):
     list_lines = block.split("\n")
     list_items = []
     for line in list_lines:
-        list_items.append(HTMLNode("li", line.lstrip("*- ")))
+        text = line.lstrip("*- ")
+        children = text_to_children(text)
+        list_items.append(ParentNode("li", children))
 
-    return HTMLNode("ul", children=list_items)
+    return ParentNode("ul", list_items)
 
 def ol_block_to_html_node(block):
     list_lines = block.split("\n")
     list_items = []
-    for i in range(1, len(list_lines)):
-        list_items.append(HTMLNode("li", list_lines[i].lstrip(f"{i}. ")))
+    for line in list_lines:
+        text = line[3:]
+        children = text_to_children(text)
+        list_items.append(ParentNode("li", children))
 
-    return HTMLNode("ol", children=list_items)
+    return ParentNode("ol", list_items)

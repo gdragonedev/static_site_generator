@@ -62,6 +62,19 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
 
+    def test_delim_bold_doc(self):
+        node = TextNode(
+            "**Diverse Cultures and Languages**: Each race, from the noble Elves to the sturdy Dwarves, is endowed with its own rich history, customs, and language. Tolkien, leveraging his expertise in philology, constructed languages such as Quenya and Sindarin, each with its own grammar and lexicon.", text_type_text
+        )
+        new_nodes = split_nodes_delimiter([node], "**", text_type_bold)
+        self.assertListEqual(
+            [
+                TextNode("Diverse Cultures and Languages", text_type_bold),
+                TextNode(": Each race, from the noble Elves to the sturdy Dwarves, is endowed with its own rich history, customs, and language. Tolkien, leveraging his expertise in philology, constructed languages such as Quenya and Sindarin, each with its own grammar and lexicon.", text_type_text),
+            ],
+            new_nodes,
+        )
+
     def test_delim_italic(self):
         node = TextNode("This is text with an *italic* word", text_type_text)
         new_nodes = split_nodes_delimiter([node], "*", text_type_italic)

@@ -1,7 +1,7 @@
 import os
 
 from static_to_public import copy_static_recursive, clear_destination
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 
 dir_path_static = "./static"
 dir_path_public = "./public"
@@ -24,7 +24,7 @@ def main():
     except Exception as e:
         print(f"Files not copied, error: {e}")
 
-    generate_page(os.path.join(dir_path_content, "index.md"), template_path, os.path.join(dir_path_public, "index.html"))
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
 
 if __name__ == "__main__":
     main()

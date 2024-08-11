@@ -137,29 +137,54 @@ II. Second item
         block = "paragraph"
         self.assertEqual(block_to_block_type(block), block_type_paragraph)
 
-def test_markdown_to_html_node():
-    # Test paragraph
-    paragraph_markdown = "This is a simple paragraph that will be converted to HTML."
-    expected_paragraph = '<div><p>This is a simple paragraph that will be converted to HTML.</p></div>'
-    assert markdown_to_html_node(paragraph_markdown).to_html() == expected_paragraph
+    def test_markdown_to_html_node_p(self):
+        # Test paragraph
+        paragraph_markdown = "This is a simple paragraph that will be converted to HTML."
+        expected_paragraph = '<div><p>This is a simple paragraph that will be converted to HTML.</p></div>'
+        self.assertEqual(markdown_to_html_node(paragraph_markdown).to_html(), expected_paragraph)
 
-    # Test headings
-    headings_markdown = "# Heading 1\n\n## Heading 2\n\n### Heading 3"
-    expected_headings = '<div><h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3></div>'
-    assert markdown_to_html_node(headings_markdown).to_html() == expected_headings
+    def test_markdown_to_html_node_h(self):
+        # Test headings
+        headings_markdown = "# Heading 1\n\n## Heading 2\n\n### Heading 3"
+        expected_headings = '<div><h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3></div>'
+        self.assertEqual(markdown_to_html_node(headings_markdown).to_html(), expected_headings)
 
-    # Test code block
-    code_block = "```\ndef my_function():\n    pass\n```"
-    expected_code_block = '<div><pre><code>def my_function():\n    pass\n</code></pre></div>'
-    assert markdown_to_html_node(code_block).to_html() == expected_code_block
+    def test_markdown_to_html_node_code(self):
+        # Test code block
+        code_block = "```\ndef my_function():\n    pass\n```"
+        expected_code_block = '<div><pre><code>def my_function():\n    pass\n</code></pre></div>'
+        self.assertEqual(markdown_to_html_node(code_block).to_html(), expected_code_block)
 
-    # Test quote block
-    quote_block = "> This is a quote block.\n> Multiple lines are supported\n> in this quote block."
-    expected_quote_block = '<div><blockquote>This is a quote block.\nMultiple lines are supported\nin this quote block.</blockquote></div>'
-    assert markdown_to_html_node(quote_block).to_html() == expected_quote_block
+    def test_markdown_to_html_node_quote(self):
+        # Test quote block
+        quote_block = """
+> This is a
+> blockquote block
 
-    # Test unordered list
-    ul_block = "* Item 1\n* Item"
+this is paragraph text
+
+"""
+        expected_quote_block = '<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>'
+        self.assertEqual(markdown_to_html_node(quote_block).to_html(), expected_quote_block)
+
+    def test_markdown_to_html_node_lists(self):
+        md = """
+- This is a list
+- with items
+- and *more* items
+
+1. This is an `ordered` list
+2. with items
+3. and more items
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>This is a list</li><li>with items</li><li>and <i>more</i> items</li></ul><ol><li>This is an <code>ordered</code> list</li><li>with items</li><li>and more items</li></ol></div>",
+        )
 
 if __name__ == "__main__":
     unittest.main()

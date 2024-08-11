@@ -82,17 +82,19 @@ def p_block_to_html_node(block):
     return ParentNode("p", children)
 
 def code_block_to_html_node(block):
-    text = block.strip("` \n")
+    text = block[4:-3]
     children = text_to_children(text)
     code_node = ParentNode("code", children)
     return ParentNode("pre", [code_node])
 
 def quote_block_to_html_node(block):
-    quote_lines = block.split("\n")
-    new_block = ""
-    for line in quote_lines:
-        new_block += f"{line.lstrip("> ")}"
-    text = new_block
+    lines = block.split("\n")
+    new_block = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("Invalid quote block")
+        new_block.append(line.lstrip(">").strip())
+    text = " ".join(new_block)
     children = text_to_children(text)
     
     return ParentNode("blockquote", children)
@@ -102,15 +104,13 @@ def h_block_to_html_node(block):
     text = block.lstrip("# ")
     children = text_to_children(text)
 
-    print(f"children: {children}")
-
     return ParentNode(f"h{h_size}", children)
 
 def ul_block_to_html_node(block):
     list_lines = block.split("\n")
     list_items = []
     for line in list_lines:
-        text = line.lstrip("*- ")
+        text = line[2:]
         children = text_to_children(text)
         list_items.append(ParentNode("li", children))
 
